@@ -1,16 +1,30 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
+import * as lambda from "aws-cdk-lib/aws-lambda";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class CicdStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const lambdaFunction = new lambda.Function(this, "lambdaFunction", {
+      runtime: lambda.Runtime.PYTHON_3_12,
+      code: lambda.Code.fromAsset("lambda"),
+      handler: "main.handler",
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'CicdQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    // add function url
+    const functionUrl = lambdaFunction.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ["*"],
+        allowedMethods: [lambda.HttpMethod.ALL],
+        allowedHeaders: ["*"],
+      },
+    });
+    //  ADD OUTPUT
+    new cdk.CfnOutput(this, "functionUrl", {
+      value: functionUrl.url,
+    });
   }
 }
