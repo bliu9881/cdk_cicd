@@ -44,5 +44,5 @@ jobs:
         env:
           AWS_REGION: ${{ vars.AWS_REGION}}
         run:
-          export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity | jq -r '.Account')
+          export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity | jq -r '.Account');
           npx cdk deploy --all --require-approval never
